@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Livewire\OperatorRegistration;
 use App\Livewire\MonitorDashboard;
 use App\Livewire\ReportsPage;
+use App\Livewire\ManageIndirectos;
 use App\Models\WindowsAlert;
 
 Route::get('/', function () {
@@ -13,6 +14,7 @@ Route::get('/', function () {
 Route::get('/registro', OperatorRegistration::class)->name('registro');
 Route::get('/monitor', MonitorDashboard::class)->name('monitor');
 Route::get('/reportes', ReportsPage::class)->name('reportes');
+Route::get('/catalogo', ManageIndirectos::class)->name('catalogo');
 
 // ── Windows alert polling endpoints ──────────────────────────────
 // GET /alerta              → returns next undelivered alert as JSON (or 204)

@@ -20,6 +20,9 @@
                             <a href="{{ route('registro') }}" class="{{ request()->routeIs('registro') ? 'border-blue-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                                 Operador
                             </a>
+                            <!-- <a href="{{ route('catalogo') }}" class="{{ request()->routeIs('catalogo') ? 'border-blue-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Catálogo
+                            </a> -->
                             <a href="{{ route('monitor') }}" class="{{ request()->routeIs('monitor') ? 'border-blue-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700' }} inline-flex items-center gap-1.5 px-1 pt-1 border-b-2 text-sm font-medium">
                                 Monitor
                                 @php $monitorPending = \App\Models\ChangeRequest::where('status','pendiente')->count(); @endphp

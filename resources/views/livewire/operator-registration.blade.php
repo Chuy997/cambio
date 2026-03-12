@@ -14,7 +14,7 @@
         @endif
     </header>
 
-    <div class="max-w-3xl mx-auto px-4 py-5 space-y-4">
+    <div class="w-full max-w-[1600px] mx-auto px-4 lg:px-8 py-5">
 
         {{-- ─── ALERTS ────────────────────────────────────────── --}}
         @if(session()->has('message'))
@@ -31,7 +31,12 @@
             </div>
         @enderror
 
-        {{-- ─── SCAN INPUT CARD ────────────────────────────────── --}}
+        <div class="flex flex-col lg:flex-row gap-8 items-start">
+            
+            {{-- ─── COLUMNA IZQUIERDA (ESCANEAR / BOXES / PENDIENTES) ── --}}
+            <div class="w-full lg:w-[55%] flex flex-col gap-6">
+
+                {{-- ─── SCAN INPUT CARD ────────────────────────────────── --}}
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm px-5 py-4">
             <label class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2 block">Escanear BOX</label>
             @error('boxInput')
@@ -151,7 +156,7 @@
             </form>
         @else
             <div class="text-center py-12 text-slate-400">
-                <p class="text-4xl mb-2">📷</p>
+                <p class="text-4xl mb-2">📟</p>
                 <p class="font-semibold text-slate-500">Escanea el primer BOX para comenzar</p>
             </div>
         @endif
@@ -224,13 +229,18 @@
                         </div>
                     @endforeach
                 </div>
-            @endif
-        </div>
+                @endif
+            </div>
 
-        {{-- ════════════════════════════════════════════════════════ --}}
-        {{-- CATÁLOGO                                                  --}}
-        {{-- ════════════════════════════════════════════════════════ --}}
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            </div> {{-- Fin Columna Izquierda --}}
+
+            {{-- ─── COLUMNA DERECHA (CATÁLOGO) ─────────────────────── --}}
+            <div class="w-full lg:w-[45%] sticky top-24">
+
+                {{-- ════════════════════════════════════════════════════════ --}}
+                {{-- CATÁLOGO                                                  --}}
+                {{-- ════════════════════════════════════════════════════════ --}}
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="flex items-center gap-3 px-5 py-4 border-b border-slate-100 bg-slate-50">
                 <div class="w-8 h-8 rounded-xl bg-violet-100 flex items-center justify-center flex-shrink-0">
                     <svg class="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
@@ -267,9 +277,7 @@
                     <input type="search"
                         wire:model.live.debounce.250ms="searchReference"
                         placeholder="Buscar por código, tipo o dimensión..."
-                        class="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-violet-400 focus:outline-none transition-colors
-                            {{ $activeCategory ? 'opacity-40 cursor-not-allowed' : '' }}"
-                        @if($activeCategory) disabled @endif
+                        class="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-violet-400 focus:outline-none transition-colors"
                     >
                 </div>
 
@@ -284,36 +292,22 @@
                     @endif
                 </div>
 
-                {{-- Table 2 columns --}}
+                {{-- Cards Grid --}}
                 @if($packagingReferences->count() > 0)
-                    @php
-                        $half   = (int) ceil($packagingReferences->count() / 2);
-                        $chunks = $packagingReferences->chunk($half ?: 1);
-                    @endphp
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        @foreach($chunks as $chunk)
-                            <div class="rounded-xl border border-slate-200 overflow-hidden">
-                                <table class="w-full text-left">
-                                    <thead>
-                                        <tr class="bg-slate-50 text-xs uppercase font-bold text-slate-400 border-b border-slate-200">
-                                            <th class="px-3 py-2">Código</th>
-                                            <th class="px-3 py-2">Tipo</th>
-                                            <th class="px-3 py-2 text-right">Dim.</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-slate-100">
-                                        @foreach($chunk as $ref)
-                                            <tr wire:click="pickReference('{{ $ref->code }}')"
-                                                class="cursor-pointer hover:bg-violet-50 active:bg-violet-100 transition-colors group">
-                                                <td class="px-3 py-2">
-                                                    <span class="font-mono font-black text-sm text-violet-700 bg-violet-50 group-hover:bg-violet-100 px-1.5 py-0.5 rounded transition-colors">{{ $ref->code }}</span>
-                                                </td>
-                                                <td class="px-3 py-2 text-xs font-semibold text-slate-600">{{ $ref->type ?? '–' }}</td>
-                                                <td class="px-3 py-2 text-right text-xs text-slate-400">{{ $ref->dimensions ?? '–' }}</td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+                        @foreach($packagingReferences as $ref)
+                            <div wire:click="pickReference('{{ $ref->code }}')"
+                                class="bg-white rounded-lg border-2 border-slate-200 p-2 cursor-pointer hover:border-violet-400 hover:bg-violet-50 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:bg-violet-100 transition-all flex flex-col justify-between group overflow-hidden">
+                                
+                                <div class="mb-1.5 truncate">
+                                    <span class="inline-block font-mono font-black text-xs text-violet-800 bg-violet-100 px-1.5 py-0.5 rounded border border-violet-200 shadow-sm truncate max-w-full" title="{{ $ref->code }}">{{ $ref->code }}</span>
+                                </div>
+                                
+                                <div class="mt-auto flex flex-col gap-0.5">
+                                    <span class="text-[9px] font-extrabold uppercase tracking-wider text-slate-500 truncate" title="{{ $ref->type ?? '–' }}">{{ $ref->type ?? '–' }}</span>
+                                    <span class="text-[9px] font-medium text-slate-400 truncate" title="{{ $ref->dimensions ?? '–' }}">{{ $ref->dimensions ?? '–' }}</span>
+                                </div>
+                                
                             </div>
                         @endforeach
                     </div>
@@ -325,6 +319,9 @@
                 @endif
             </div>
         </div>
+
+            </div> {{-- Fin Columna Derecha --}}
+        </div> {{-- Fin Grid 12 --}}
 
     </div>
 </div>

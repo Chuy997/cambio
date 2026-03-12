@@ -46,7 +46,15 @@ class OperatorRegistration extends Component
 
         $this->rows[] = ['box_name' => $code, 'indirecto_code' => ''];
         $this->boxInput = '';
-        $this->focusedRow = count($this->rows) - 1;
+        
+        // Keep focus on the FIRST unassigned row, so we fill from top to bottom
+        foreach ($this->rows as $index => $r) {
+            if (empty($r['indirecto_code'])) {
+                $this->focusedRow = $index;
+                break;
+            }
+        }
+        
         $this->resetErrorBag('boxInput');
     }
 
@@ -64,12 +72,44 @@ class OperatorRegistration extends Component
 
     public function pickReference(string $code): void
     {
-        $targetRow = $this->focusedRow ?? (count($this->rows) > 0 ? count($this->rows) - 1 : null);
+        $targetRow = $this->focusedRow;
+        
+        // If focus is lost, fallback to the very first unassigned box
+        if ($targetRow === null) {
+            foreach ($this->rows as $index => $row) {
+                if (empty($row['indirecto_code'])) {
+                    $targetRow = $index;
+                    break;
+                }
+            }
+        }
+        
         if ($targetRow !== null && isset($this->rows[$targetRow])) {
             $this->rows[$targetRow]['indirecto_code'] = $code;
+            
+            // Auto-advance logic: find the NEXT row without an indirecto assigned
+            $nextRow = null;
+            
+            // Search forward from the current target
+            for ($i = $targetRow + 1; $i < count($this->rows); $i++) {
+                if (empty($this->rows[$i]['indirecto_code'])) {
+                    $nextRow = $i;
+                    break;
+                }
+            }
+            
+            // If none found forward, search from the beginning
+            if ($nextRow === null) {
+                for ($i = 0; $i < $targetRow; $i++) {
+                    if (empty($this->rows[$i]['indirecto_code'])) {
+                        $nextRow = $i;
+                        break;
+                    }
+                }
+            }
+            
+            $this->focusedRow = $nextRow; // Will be null if all rows are fully assigned
         }
-        // Close the dropdown after selection
-        $this->focusedRow = null;
     }
 
     public function setCategory(?string $category): void
@@ -135,9 +175,14 @@ class OperatorRegistration extends Component
     {
         // Catalog filter
         $query = PackagingReference::query();
+        
+        // Filter by category if selected
         if ($this->activeCategory !== null) {
             $query->where('type', $this->activeCategory);
-        } elseif (trim($this->searchReference) !== '') {
+        }
+        
+        // Filter by search term if typed (stackable with category)
+        if (trim($this->searchReference) !== '') {
             $term = '%' . trim($this->searchReference) . '%';
             $query->where(fn ($q) =>
                 $q->where('code', 'like', $term)
@@ -145,6 +190,7 @@ class OperatorRegistration extends Component
                   ->orWhere('dimensions', 'like', $term)
             );
         }
+        
         $packagingReferences = $query->orderBy('code')->get();
 
         // Per-card autocomplete suggestions

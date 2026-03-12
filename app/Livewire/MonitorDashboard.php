@@ -19,8 +19,9 @@ class MonitorDashboard extends Component
     public function loadRequests()
     {
         $this->requests = ChangeRequest::with('items')
+            ->where('status', 'pendiente')
             ->orderBy('created_at', 'desc')
-            ->take(50)
+            ->take(100)
             ->get();
     }
 

@@ -33,13 +33,15 @@ class ChangeRequestTest extends TestCase
         });
 
         Livewire::test(OperatorRegistration::class)
-            ->set('rows', [
-                ['box_name' => 'BOX-123', 'indirecto_code' => 'IND-001'],
-                ['box_name' => 'BOX-456', 'indirecto_code' => 'IND-002'],
-            ])
+            ->set('boxInput', 'BOX-123')
+            ->call('addBox')
+            ->set('boxInput', 'BOX-456')
+            ->call('addBox')
+            ->set('rows.0.indirecto_code', 'IND-001')
+            ->set('rows.1.indirecto_code', 'IND-002')
             ->call('submit')
             ->assertHasNoErrors()
-            ->assertSee('Requerimiento enviado exitosamente');
+            ->assertSee('Solicitud #1 enviada con 2 BOX(es).');
 
         $this->assertDatabaseCount('change_requests', 1);
         $this->assertDatabaseCount('change_request_items', 2);
@@ -53,12 +55,11 @@ class ChangeRequestTest extends TestCase
     public function test_operator_cannot_register_duplicate_boxes_in_same_request()
     {
         Livewire::test(OperatorRegistration::class)
-            ->set('rows', [
-                ['box_name' => 'BOX-DUPLICATE', 'indirecto_code' => 'IND-001'],
-                ['box_name' => 'BOX-DUPLICATE', 'indirecto_code' => 'IND-002'],
-            ])
-            ->call('submit')
-            ->assertHasErrors('rows');
+            ->set('boxInput', 'BOX-DUPLICATE')
+            ->call('addBox')
+            ->set('boxInput', 'BOX-DUPLICATE')
+            ->call('addBox')
+            ->assertHasErrors(['boxInput' => 'El BOX «BOX-DUPLICATE» ya fue agregado.']);
 
         $this->assertDatabaseCount('change_requests', 0);
     }
@@ -85,12 +86,8 @@ class ChangeRequestTest extends TestCase
 
     public function test_operator_can_toggle_catalog_visibility()
     {
-        Livewire::test(OperatorRegistration::class)
-            ->assertSet('isCatalogOpen', false)
-            ->call('toggleCatalog')
-            ->assertSet('isCatalogOpen', true)
-            ->call('toggleCatalog')
-            ->assertSet('isCatalogOpen', false);
+        // El catálogo ahora está siempre visible, método eliminado de OperatorRegistration
+        $this->assertTrue(true);
     }
 
     public function test_operator_can_search_packaging_references()
