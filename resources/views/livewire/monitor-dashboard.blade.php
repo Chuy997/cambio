@@ -1,5 +1,29 @@
 <div class="min-h-screen bg-gray-50 font-sans p-6 text-gray-900">
     <div class="max-w-7xl mx-auto">
+
+        {{-- Clipboard helper (works on HTTP, no HTTPS required) --}}
+        <script>
+            function copiarTexto(text, btn) {
+                try {
+                    if (navigator.clipboard && window.isSecureContext) {
+                        navigator.clipboard.writeText(text);
+                    } else {
+                        var ta = document.createElement('textarea');
+                        ta.value = text;
+                        ta.style.position = 'fixed';
+                        ta.style.opacity = '0';
+                        document.body.appendChild(ta);
+                        ta.focus(); ta.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(ta);
+                    }
+                    var orig = btn.innerHTML;
+                    btn.innerHTML = '\u2705 Copiado';
+                    setTimeout(function(){ btn.innerHTML = orig; }, 1500);
+                } catch(e) { alert('No se pudo copiar: ' + e); }
+            }
+        </script>
+
         <div class="flex justify-between items-center mb-8 border-b border-gray-200 pb-4">
             <div>
                 <h1 class="text-4xl font-bold tracking-tight">Monitor de Indirectos</h1>
@@ -35,10 +59,19 @@
                         </div>
 
                         @if($request->status === 'pendiente')
-                            <button wire:click="confirmChange({{ $request->id }})" 
-                                class="px-6 py-2 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg shadow transition-colors">
-                                CONFIRMAR CAMBIO
-                            </button>
+                            <div class="flex items-center gap-3">
+                                {{-- Copy all BOX codes (HTTP-compatible) --}}
+                                @php $boxList = $request->items->pluck('box_name')->join(' '); @endphp
+                                <button
+                                    onclick="copiarTexto('{{ $boxList }}', this)"
+                                    class="px-4 py-2 bg-white border-2 border-gray-300 hover:border-blue-400 text-gray-700 hover:text-blue-700 font-bold rounded-lg text-sm transition-colors">
+                                    📋 Copiar BOX
+                                </button>
+                                <button wire:click="confirmChange({{ $request->id }})" 
+                                    class="px-6 py-2 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg shadow transition-colors">
+                                    CONFIRMAR CAMBIO
+                                </button>
+                            </div>
                         @endif
                     </div>
 

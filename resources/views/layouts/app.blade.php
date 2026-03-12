@@ -14,14 +14,21 @@
                 <div class="flex justify-between h-16">
                     <div class="flex">
                         <div class="flex-shrink-0 flex items-center">
-                            <span class="font-black text-2xl tracking-tighter text-blue-600">INDIRECTOS.APP</span>
+                            <span class="font-black text-2xl tracking-tighter text-blue-600">Cambio de Indirectos</span>
                         </div>
                         <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
                             <a href="{{ route('registro') }}" class="{{ request()->routeIs('registro') ? 'border-blue-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                Operador (Registro)
+                                Operador
                             </a>
-                            <a href="{{ route('monitor') }}" class="{{ request()->routeIs('monitor') ? 'border-blue-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                Monitor (Encargado)
+                            <a href="{{ route('monitor') }}" class="{{ request()->routeIs('monitor') ? 'border-blue-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700' }} inline-flex items-center gap-1.5 px-1 pt-1 border-b-2 text-sm font-medium">
+                                Monitor
+                                @php $monitorPending = \App\Models\ChangeRequest::where('status','pendiente')->count(); @endphp
+                                @if($monitorPending > 0)
+                                    <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:#ef4444;color:#ffffff;font-size:11px;font-weight:900;line-height:1;">{{ $monitorPending }}</span>
+                                @endif
+                            </a>
+                            <a href="{{ route('reportes') }}" class="{{ request()->routeIs('reportes') ? 'border-blue-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Reportes
                             </a>
                         </div>
                     </div>

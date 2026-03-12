@@ -43,7 +43,7 @@
                     wire:model="boxInput"
                     wire:keydown.enter.prevent="addBox"
                     class="flex-1 bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 text-2xl font-mono font-bold uppercase tracking-widest text-slate-800 placeholder-slate-300 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
-                    placeholder="ESCANEAR → ENTER"
+                    placeholder="ESCANEAR BOX"
                     autofocus
                     autocomplete="off"
                 >
@@ -266,7 +266,7 @@
                     </div>
                     <input type="search"
                         wire:model.live.debounce.250ms="searchReference"
-                        placeholder="Buscar código o tipo..."
+                        placeholder="Buscar por código, tipo o dimensión..."
                         class="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-violet-400 focus:outline-none transition-colors
                             {{ $activeCategory ? 'opacity-40 cursor-not-allowed' : '' }}"
                         @if($activeCategory) disabled @endif

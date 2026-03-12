@@ -8,6 +8,8 @@ setlocal enabledelayedexpansion
 ::   2. Ejecutalo (doble clic) - se queda en segundo plano
 ::   3. Cuando un operador envie un requerimiento, aparecera
 ::      una ventana emergente en tu pantalla
+::      OK  = abre el Monitor en el navegador
+::      Cancelar = ignorar la alerta
 ::
 :: REQUISITOS: Windows 10/11 con curl disponible (viene incluido)
 :: ============================================================
@@ -38,8 +40,13 @@ echo.
 
         echo [nueva alerta] !MSG!
 
-        :: Mostrar ventana emergente usando PowerShell (funciona en todos los Windows modernos)
-        powershell -NoProfile -WindowStyle Hidden -Command "(New-Object -ComObject WScript.Shell).PopUp('!MSG!', 0, 'CAMBIO DE INDIRECTO', 48)"
+        :: Mostrar ventana emergente - OK abre el Monitor, Cancelar ignora
+        :: Tipo 49 = OK+Cancelar (1) + icono Exclamacion (48) = 49
+        :: Respuesta: 1=OK, 2=Cancelar, -1=timeout
+        for /f "usebackq delims=" %%R in (`powershell -NoProfile -WindowStyle Hidden -Command "(New-Object -ComObject WScript.Shell).PopUp('!MSG!`n`nPresiona OK para abrir el Monitor.', 0, 'CAMBIO DE INDIRECTO - Nuevo Requerimiento', 49)"`) do set RESP=%%R
+
+        :: Si el encargado presiono OK, abrir el Monitor en el navegador
+        if "!RESP!"=="1" start "" "http://192.168.1.36/cambio/public/index.php/monitor"
 
         :: Marcar como entregada en el servidor
         curl -s "%SERVER%/alerta/!ALERT_ID!/ok" -o NUL
